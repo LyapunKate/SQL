@@ -1,7 +1,8 @@
 
---Лабораторная работа №1 
---1: Выбрать среднемесячную стоимость покупки клиентовиз штата 'CA' (Калифорния) 
---(для каждого месяца вывести среднюю сумму покупок в этом месяце)
+
+--Р›Р°Р±РѕСЂР°С‚РѕСЂРЅР°СЏ СЂР°Р±РѕС‚Р° в„–1 
+--1: Р’С‹Р±СЂР°С‚СЊ СЃСЂРµРґРЅРµРјРµСЃСЏС‡РЅСѓСЋ СЃС‚РѕРёРјРѕСЃС‚СЊ РїРѕРєСѓРїРєРё РєР»РёРµРЅС‚РѕРІРёР· С€С‚Р°С‚Р° 'CA' (РљР°Р»РёС„РѕСЂРЅРёСЏ) 
+--(РґР»СЏ РєР°Р¶РґРѕРіРѕ РјРµСЃСЏС†Р° РІС‹РІРµСЃС‚Рё СЃСЂРµРґРЅСЋСЋ СЃСѓРјРјСѓ РїРѕРєСѓРїРѕРє РІ СЌС‚РѕРј РјРµСЃСЏС†Рµ)
 
 SELECT year(SALES_ORDER.ship_date) AS year, 
 month(SALES_ORDER.ship_date) AS month, 
@@ -11,7 +12,7 @@ WHERE CUSTOMER.customer_id = SALES_ORDER.customer_id AND CUSTOMER.state = 'CA'
 GROUP BY year(SALES_ORDER.ship_date), month(SALES_ORDER.ship_date)
 ORDER BY year(SALES_ORDER.ship_date), month(SALES_ORDER.ship_date);
 
---правильный вариант
+--РїСЂР°РІРёР»СЊРЅС‹Р№ РІР°СЂРёР°РЅС‚
 
 SELECT year(SALES_ORDER.ship_date) AS year, 
 month(SALES_ORDER.ship_date) AS month, 
@@ -22,8 +23,8 @@ GROUP BY year(SALES_ORDER.ship_date), month(SALES_ORDER.ship_date)
 ORDER BY year(SALES_ORDER.ship_date), month(SALES_ORDER.ship_date);
 
 
---2: Вывести текущие цены всех продуктов на момент, 
---когда "WOMENS SPORTS" сделает свою первую покупку
+--2: Р’С‹РІРµСЃС‚Рё С‚РµРєСѓС‰РёРµ С†РµРЅС‹ РІСЃРµС… РїСЂРѕРґСѓРєС‚РѕРІ РЅР° РјРѕРјРµРЅС‚, 
+--РєРѕРіРґР° "WOMENS SPORTS" СЃРґРµР»Р°РµС‚ СЃРІРѕСЋ РїРµСЂРІСѓСЋ РїРѕРєСѓРїРєСѓ
 SELECT actual_price ,description
 FROM CUSTOMER
 JOIN SALES_ORDER ON CUSTOMER.customer_id = SALES_ORDER.customer_id
@@ -45,7 +46,7 @@ WHERE name='WOMENS SPORTS') AND ( SELECT min(order_date) FROM CUSTOMER
 JOIN SALES_ORDER ON CUSTOMER.customer_id=SALES_ORDER.customer_id
 WHERE name='WOMENS SPORTS')<ISNULL (PRICE.end_date, 31/12/1999)
 
---3: Определить отдел, в котором средняя зарплата+комиссионные сотрудников минимальная
+--3: РћРїСЂРµРґРµР»РёС‚СЊ РѕС‚РґРµР», РІ РєРѕС‚РѕСЂРѕРј СЃСЂРµРґРЅСЏСЏ Р·Р°СЂРїР»Р°С‚Р°+РєРѕРјРёСЃСЃРёРѕРЅРЅС‹Рµ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ РјРёРЅРёРјР°Р»СЊРЅР°СЏ
 SELECT TOP (1) WITH TIES avg(EMPLOYEE.salary + ISNULL (EMPLOYEE.commission, 0)), 
 DEPARTMENT.department_id
 FROM EMPLOYEE, DEPARTMENT
@@ -53,7 +54,7 @@ WHERE EMPLOYEE.department_id = DEPARTMENT.department_id
 GROUP BY DEPARTMENT.department_id
 ORDER BY avg(EMPLOYEE.salary + ISNULL (EMPLOYEE.commission, 0))
 
---4: Определить, сколько в среднем платят менеджеру за одного подчиненого
+--4: РћРїСЂРµРґРµР»РёС‚СЊ, СЃРєРѕР»СЊРєРѕ РІ СЃСЂРµРґРЅРµРј РїР»Р°С‚СЏС‚ РјРµРЅРµРґР¶РµСЂСѓ Р·Р° РѕРґРЅРѕРіРѕ РїРѕРґС‡РёРЅРµРЅРѕРіРѕ
 SELECT MANAGER.SALARY/COUNT(MANAGER.LAST_NAME), MANAGER.LAST_NAME
 FROM EMPLOYEE MANAGER, EMPLOYEE B
 WHERE MANAGER.EMPLOYEE_ID=B.MANAGER_ID
