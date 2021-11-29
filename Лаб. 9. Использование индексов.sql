@@ -2,7 +2,7 @@
 SET STATISTICS IO ON
 SET STATISTICS TIME ON
 
--- без индекса
+-- Р±РµР· РёРЅРґРµРєСЃР°
 select cust.ContactName, ord.OrderDate, Freight 
 from Customers AS cust
 join Orders AS ord on ord.CustomerID = cust.CustomerID
@@ -12,10 +12,10 @@ where
 		cust.city = 'Lyon' and
 		ord.OrderDate between '1997-01-01' and '1999-01-01'
 
-CREATE CLUSTERED INDEX Customer_clustered ON Customers (CustomerID) --выводим на поля с join
+CREATE CLUSTERED INDEX Customer_clustered ON Customers (CustomerID) --РІС‹РІРѕРґРёРј РЅР° РїРѕР»СЏ СЃ join
 CREATE CLUSTERED INDEX Orders_clustered ON Orders (CustomerID) 
 
-CREATE NONCLUSTERED INDEX Orders_nonclustered ON Orders(OrderDate, Freight) --выводим на поля where
+CREATE NONCLUSTERED INDEX Orders_nonclustered ON Orders(OrderDate, Freight) --РІС‹РІРѕРґРёРј РЅР° РїРѕР»СЏ where
 CREATE NONCLUSTERED INDEX Customer_nonclustered ON Customers(city) INCLUDE(ContactName)
 
 select cust.ContactName, ord.OrderDate, Freight 
@@ -33,12 +33,12 @@ DROP INDEX Orders_nonclustered ON Orders
 DROP INDEX Customer_nonclustered ON Customers
 
 
---Без индекса:   Время ЦП = 313 мс, затраченное время = 1460 мс, число логических чтений = 30328 
---С индексом:    Время ЦП = 46 мс, затраченное время = 1022 мс, число логических чтений = 85.
+--Р‘РµР· РёРЅРґРµРєСЃР°:   Р’СЂРµРјСЏ Р¦Рџ = 313 РјСЃ, Р·Р°С‚СЂР°С‡РµРЅРЅРѕРµ РІСЂРµРјСЏ = 1460 РјСЃ, С‡РёСЃР»Рѕ Р»РѕРіРёС‡РµСЃРєРёС… С‡С‚РµРЅРёР№ = 30328 
+--РЎ РёРЅРґРµРєСЃРѕРј:    Р’СЂРµРјСЏ Р¦Рџ = 46 РјСЃ, Р·Р°С‚СЂР°С‡РµРЅРЅРѕРµ РІСЂРµРјСЏ = 1022 РјСЃ, С‡РёСЃР»Рѕ Р»РѕРіРёС‡РµСЃРєРёС… С‡С‚РµРЅРёР№ = 85.
 
 
 
---Важной характеристикой кластеризованного индекса является то, 
---что все значения отсортированы в определенном порядке либо возрастания, либо убывания. 
---Таким образом, таблица или представление может иметь только один кластеризованный индекс.
---Некласт индекс - это указатели в листьях на реальн. данные, то нужна доп операция для извлеч данных
+--Р’Р°Р¶РЅРѕР№ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРѕР№ РєР»Р°СЃС‚РµСЂРёР·РѕРІР°РЅРЅРѕРіРѕ РёРЅРґРµРєСЃР° СЏРІР»СЏРµС‚СЃСЏ С‚Рѕ, 
+--С‡С‚Рѕ РІСЃРµ Р·РЅР°С‡РµРЅРёСЏ РѕС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅС‹ РІ РѕРїСЂРµРґРµР»РµРЅРЅРѕРј РїРѕСЂСЏРґРєРµ Р»РёР±Рѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЏ, Р»РёР±Рѕ СѓР±С‹РІР°РЅРёСЏ. 
+--РўР°РєРёРј РѕР±СЂР°Р·РѕРј, С‚Р°Р±Р»РёС†Р° РёР»Рё РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РјРѕР¶РµС‚ РёРјРµС‚СЊ С‚РѕР»СЊРєРѕ РѕРґРёРЅ РєР»Р°СЃС‚РµСЂРёР·РѕРІР°РЅРЅС‹Р№ РёРЅРґРµРєСЃ.
+--РќРµРєР»Р°СЃС‚ РёРЅРґРµРєСЃ - СЌС‚Рѕ СѓРєР°Р·Р°С‚РµР»Рё РІ Р»РёСЃС‚СЊСЏС… РЅР° СЂРµР°Р»СЊРЅ. РґР°РЅРЅС‹Рµ, С‚Рѕ РЅСѓР¶РЅР° РґРѕРї РѕРїРµСЂР°С†РёСЏ РґР»СЏ РёР·РІР»РµС‡ РґР°РЅРЅС‹С…
