@@ -1,16 +1,16 @@
---Выбрать турнир с наибольшим количеством гроссмейстеров
+--Р’С‹Р±СЂР°С‚СЊ С‚СѓСЂРЅРёСЂ СЃ РЅР°РёР±РѕР»СЊС€РёРј РєРѕР»РёС‡РµСЃС‚РІРѕРј РіСЂРѕСЃСЃРјРµР№СЃС‚РµСЂРѕРІ
 SELECT top 1  COUNT(DISTINCT(PERSON.person_id)) as NUMBER, TOURNEY.name_of_tourney FROM RANG_NAME 
 JOIN RANG ON RANG_NAME.rang_id = RANG.rang_id 
 JOIN PERSON ON RANG.person_id = PERSON.person_id
 JOIN STAGE_PERSON ON  PERSON.person_id = STAGE_PERSON.player_id
 JOIN STAGE ON STAGE_PERSON.stage_id=STAGE.stage_id
 JOIN TOURNEY ON STAGE.tourney_id=TOURNEY.tourney_id
-WHERE rang_name = 'ГРОССМЕЙСТЕР'
+WHERE rang_name = 'Р“Р РћРЎРЎРњР•Р™РЎРўР•Р '
 GROUP BY TOURNEY.name_of_tourney
 ORDER BY COUNT(DISTINCT(PERSON.person_id)) DESC
 
---Выбрать тех шахматистов, которые выйграли не менее двух стадий в течение турнира 
---'ПОДРАСТАЮЩИЙ ФЕРЗЬ' 
+--Р’С‹Р±СЂР°С‚СЊ С‚РµС… С€Р°С…РјР°С‚РёСЃС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ РІС‹Р№РіСЂР°Р»Рё РЅРµ РјРµРЅРµРµ РґРІСѓС… СЃС‚Р°РґРёР№ РІ С‚РµС‡РµРЅРёРµ С‚СѓСЂРЅРёСЂР° 
+--'РџРћР”Р РђРЎРўРђР®Р©РР™ Р¤Р•Р Р—Р¬' 
 
 SELECT COUNT(STAGE_PERSON.player_id) AS NUMBER, PERSON.surname, PERSON.name_, PERSON.middle_name 
 FROM STAGE_PERSON JOIN PERSON ON STAGE_PERSON.player_id = PERSON.person_id
@@ -19,7 +19,7 @@ GROUP BY PERSON.person_id, PERSON.surname, PERSON.name_, PERSON.middle_name
 HAVING COUNT(STAGE_PERSON.player_id) >= 2
 ORDER BY COUNT(STAGE_PERSON.player_id) DESC
 
- --Вывести, в каком городе проводился турнир, в котором все игры были типа "Блиц"
+ --Р’С‹РІРµСЃС‚Рё, РІ РєР°РєРѕРј РіРѕСЂРѕРґРµ РїСЂРѕРІРѕРґРёР»СЃСЏ С‚СѓСЂРЅРёСЂ, РІ РєРѕС‚РѕСЂРѕРј РІСЃРµ РёРіСЂС‹ Р±С‹Р»Рё С‚РёРїР° "Р‘Р»РёС†"
 
  SELECT CITY.city, TOURNEY.name_of_tourney
  FROM CITY 
@@ -27,10 +27,10 @@ ORDER BY COUNT(STAGE_PERSON.player_id) DESC
  JOIN STAGE ON  TOURNEY.tourney_id = STAGE.tourney_id
  JOIN GAME ON STAGE.stage_id = GAME.stage_id
  JOIN TYPE_OF_GAME ON GAME.type_of_game_id = TYPE_OF_GAME.type_of_game_id
- WHERE TYPE_OF_GAME.type_of_game = 'БЛИЦ'
+ WHERE TYPE_OF_GAME.type_of_game = 'Р‘Р›РР¦'
  GROUP BY CITY.city, TOURNEY.name_of_tourney
 
- -- Ввести тип стадии и название турнира, в которой было максимальное количество игроков
+ -- Р’РІРµСЃС‚Рё С‚РёРї СЃС‚Р°РґРёРё Рё РЅР°Р·РІР°РЅРёРµ С‚СѓСЂРЅРёСЂР°, РІ РєРѕС‚РѕСЂРѕР№ Р±С‹Р»Рѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РёРіСЂРѕРєРѕРІ
  
  SELECT top 1 COUNT(DISTINCT(STAGE_PERSON.player_id)) as quantitu_of_players, TYPE_OF_STAGE.type_of_stage, STAGE.stage_id, TOURNEY.name_of_tourney
  FROM TYPE_OF_STAGE
@@ -39,20 +39,20 @@ ORDER BY COUNT(STAGE_PERSON.player_id) DESC
  JOIN TOURNEY ON STAGE.tourney_id = TOURNEY.tourney_id
  GROUP BY  TYPE_OF_STAGE.type_of_stage, STAGE.stage_id, TOURNEY.name_of_tourney
  
- -- заменим город, записанный заглавными буквами, на город, записанный с заглавной буквы
+ -- Р·Р°РјРµРЅРёРј РіРѕСЂРѕРґ, Р·Р°РїРёСЃР°РЅРЅС‹Р№ Р·Р°РіР»Р°РІРЅС‹РјРё Р±СѓРєРІР°РјРё, РЅР° РіРѕСЂРѕРґ, Р·Р°РїРёСЃР°РЅРЅС‹Р№ СЃ Р·Р°РіР»Р°РІРЅРѕР№ Р±СѓРєРІС‹
  UPDATE CITY
- SET CITY.city = 'Москва'
- WHERE CITY.city = 'Новороссийск'
+ SET CITY.city = 'РњРѕСЃРєРІР°'
+ WHERE CITY.city = 'РќРѕРІРѕСЂРѕСЃСЃРёР№СЃРє'
 
  SELECT * FROM CITY
 
- -- удалим строку таблицы с рангом 'IV' из таблицы RANG_NAME и выведем значения таблицы RANG,
- -- ссылающейся на таблицу RANG_NAME
+ -- СѓРґР°Р»РёРј СЃС‚СЂРѕРєСѓ С‚Р°Р±Р»РёС†С‹ СЃ СЂР°РЅРіРѕРј 'IV' РёР· С‚Р°Р±Р»РёС†С‹ RANG_NAME Рё РІС‹РІРµРґРµРј Р·РЅР°С‡РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ RANG,
+ -- СЃСЃС‹Р»Р°СЋС‰РµР№СЃСЏ РЅР° С‚Р°Р±Р»РёС†Сѓ RANG_NAME
  delete RANG_NAME
  where rang_id = 1
  select * from rang
 
--- поменяем id 'IV' ранга
+-- РїРѕРјРµРЅСЏРµРј id 'IV' СЂР°РЅРіР°
 DELETE RANG_NAME
 WHERE rang_id = 1
 SET IDENTITY_INSERT RANG_NAME ON;
@@ -62,14 +62,14 @@ VALUES (10, 'IV');
 
 SELECT * FROM RANG_NAME
 
--- изменить минимальную продолжительность игры типа "рапид"
+-- РёР·РјРµРЅРёС‚СЊ РјРёРЅРёРјР°Р»СЊРЅСѓСЋ РїСЂРѕРґРѕР»Р¶РёС‚РµР»СЊРЅРѕСЃС‚СЊ РёРіСЂС‹ С‚РёРїР° "СЂР°РїРёРґ"
 update TYPE_OF_GAME
 set type_of_game.min_duration_ = 20
-WHERE TYPE_OF_GAME.type_of_game = 'РАПИД'
+WHERE TYPE_OF_GAME.type_of_game = 'Р РђРџРР”'
 
 select * from type_of_game 
  
---выбрать всех игроков, которые играли белыми в турнире 'БФ СТАНДАРТ ИНДИВИДУАЛЬНЫЙ'
+--РІС‹Р±СЂР°С‚СЊ РІСЃРµС… РёРіСЂРѕРєРѕРІ, РєРѕС‚РѕСЂС‹Рµ РёРіСЂР°Р»Рё Р±РµР»С‹РјРё РІ С‚СѓСЂРЅРёСЂРµ 'Р‘Р¤ РЎРўРђРќР”РђР Рў РРќР”РР’РР”РЈРђР›Р¬РќР«Р™'
 SELECT PERSON.surname, PERSON.name_, PERSON.middle_name
 FROM PERSON 
 JOIN PLAYERS_GAMES ON PERSON.person_id = PLAYERS_GAMES.player_id
@@ -77,10 +77,10 @@ JOIN COLOR ON PLAYERS_GAMES.color_id = COLOR.color_id
 JOIN GAME ON PLAYERS_GAMES.game_id = GAME.game_id
 JOIN STAGE ON GAME.stage_id = STAGE.stage_id
 JOIN TOURNEY ON STAGE.tourney_id = TOURNEY.tourney_id
-WHERE TOURNEY.name_of_tourney = 'БФ СТАНДАРТ ИНДИВИДУАЛЬНЫЙ' AND COLOR.color = 'WHITE'
+WHERE TOURNEY.name_of_tourney = 'Р‘Р¤ РЎРўРђРќР”РђР Рў РРќР”РР’РР”РЈРђР›Р¬РќР«Р™' AND COLOR.color = 'WHITE'
 GROUP BY PERSON.surname, PERSON.name_, PERSON.middle_name
 
--- вывести игроков, которые играли в двух или более турнирах
+-- РІС‹РІРµСЃС‚Рё РёРіСЂРѕРєРѕРІ, РєРѕС‚РѕСЂС‹Рµ РёРіСЂР°Р»Рё РІ РґРІСѓС… РёР»Рё Р±РѕР»РµРµ С‚СѓСЂРЅРёСЂР°С…
 
 SELECT count(distinct(TOURNEY.tourney_id)) as quantity_of_tourners, PERSON.surname, PERSON.name_, 
 PERSON.middle_name
@@ -93,18 +93,18 @@ HAVING count(distinct(TOURNEY.tourney_id)) >= 2
 ORDER BY PERSON.surname
 
 
--- вывести итоговую таблицу турнира 'ЧЕМПИОНАТ ДФО'
+-- РІС‹РІРµСЃС‚Рё РёС‚РѕРіРѕРІСѓСЋ С‚Р°Р±Р»РёС†Сѓ С‚СѓСЂРЅРёСЂР° 'Р§Р•РњРџРРћРќРђРў Р”Р¤Рћ'
 SELECT STAGE_PERSON.place, PERSON.surname, PERSON.name_, PERSON.middle_name
 FROM PERSON
 JOIN STAGE_PERSON ON PERSON.person_id = STAGE_PERSON.player_id
 JOIN STAGE ON STAGE_PERSON.stage_id = STAGE.stage_id
 JOIN TOURNEY ON STAGE.tourney_id = TOURNEY.tourney_id
-WHERE TOURNEY.name_of_tourney = 'ЧЕМПИОНАТ ДФО'
+WHERE TOURNEY.name_of_tourney = 'Р§Р•РњРџРРћРќРђРў Р”Р¤Рћ'
 GROUP BY  STAGE_PERSON.place, PERSON.surname, PERSON.name_, PERSON.middle_name
 
---удалить турнир, который проходил в Стокгольме
+--СѓРґР°Р»РёС‚СЊ С‚СѓСЂРЅРёСЂ, РєРѕС‚РѕСЂС‹Р№ РїСЂРѕС…РѕРґРёР» РІ РЎС‚РѕРєРіРѕР»СЊРјРµ
 DELETE FROM TOURNEY
 FROM TOURNEY JOIN CITY ON (TOURNEY.city_id = CITY.city_id)
-where city.city = 'Стокгольм'
+where city.city = 'РЎС‚РѕРєРіРѕР»СЊРј'
 
 select * from TOURNEY
