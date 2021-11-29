@@ -1,8 +1,8 @@
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 
---ГРЯЗНОЕ ЧТЕНИЕ ДЛЯ READ UNCOMMITED
+--Р“Р РЇР—РќРћР• Р§РўР•РќРР• Р”Р›РЇ READ UNCOMMITED
 BEGIN TRANSACTION -- 2
-UPDATE person SET person.surname = 'Петрова' -- 4 
+UPDATE person SET person.surname = 'РџРµС‚СЂРѕРІР°' -- 4 
 WHERE person.person_id = 1
 ROLLBACK --6
 
@@ -12,10 +12,10 @@ ROLLBACK --6
 
 
 
---ПОТЕРЯННЫЕ ИЗМЕНЕНИЯ ДЛЯ READ UNCOMMITED
+--РџРћРўР•Р РЇРќРќР«Р• РР—РњР•РќР•РќРРЇ Р”Р›РЇ READ UNCOMMITED
 SET LOCK_TIMEOUT -1
 BEGIN TRANSACTION --1
-UPDATE person SET person.surname = 'Петрова' --3
+UPDATE person SET person.surname = 'РџРµС‚СЂРѕРІР°' --3
 WHERE person.person_id = 1
 
 COMMIT --4
@@ -24,75 +24,75 @@ COMMIT --4
 select * from person where person.person_id = 1;
 
 
-update person set person.surname = 'Терёшина'
+update person set person.surname = 'РўРµСЂС‘С€РёРЅР°'
 where person.person_id = 1
 
 select * from person where person.person_id = 1
 
--- ДЛЯ READ COMMITTED
+-- Р”Р›РЇ READ COMMITTED
 SET TRANSACTION ISOLATION LEVEL READ COMMITTED
 
---ГРЯЗНОЕ ЧТЕНИЕ
+--Р“Р РЇР—РќРћР• Р§РўР•РќРР•
 BEGIN TRANSACTION --2 
-UPDATE person SET person.surname = 'Петрова' --4
+UPDATE person SET person.surname = 'РџРµС‚СЂРѕРІР°' --4
 WHERE person.person_id = 1
 ROLLBACK --6
 
---НЕПОВТОРЯЮЩЕЕСЯ ЧТЕНИЕ
+--РќР•РџРћР’РўРћР РЇР®Р©Р•Р•РЎРЇ Р§РўР•РќРР•
 BEGIN TRANSACTION --2
-UPDATE person SET person.surname = 'Петрова' --4
+UPDATE person SET person.surname = 'РџРµС‚СЂРѕРІР°' --4
 WHERE person.person_id = 1
-COMMIT--изменит значение в таблице и успешно выполнится
---тк аномалия неповторяющегося чтения разрешена на данном
---уровне изоляции
+COMMIT--РёР·РјРµРЅРёС‚ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ Рё СѓСЃРїРµС€РЅРѕ РІС‹РїРѕР»РЅРёС‚СЃСЏ
+--С‚Рє Р°РЅРѕРјР°Р»РёСЏ РЅРµРїРѕРІС‚РѕСЂСЏСЋС‰РµРіРѕСЃСЏ С‡С‚РµРЅРёСЏ СЂР°Р·СЂРµС€РµРЅР° РЅР° РґР°РЅРЅРѕРј
+--СѓСЂРѕРІРЅРµ РёР·РѕР»СЏС†РёРё
 
 
-update person set person.surname = 'Терёшина'
+update person set person.surname = 'РўРµСЂС‘С€РёРЅР°'
 where person.person_id = 1
 
---ДЛЯ REPEATABLE READ
+--Р”Р›РЇ REPEATABLE READ
 
 SET TRANSACTION ISOLATION LEVEL REPEATABLE READ
 
---НЕПОВТОРЯЮЩЕЕСЯ ЧТЕНИЕ
+--РќР•РџРћР’РўРћР РЇР®Р©Р•Р•РЎРЇ Р§РўР•РќРР•
 BEGIN TRANSACTION --2
-UPDATE person SET person.surname = 'Петрова' --4
+UPDATE person SET person.surname = 'РџРµС‚СЂРѕРІР°' --4
 WHERE person.person_id = 1
-COMMIT--будет ждать завершения транзакции 1, тк иначе будут
---изменеы данные повторно считываемые в транзакции 1, те 
---данная аномалия блокируется на данном уровне изоляции
+COMMIT--Р±СѓРґРµС‚ Р¶РґР°С‚СЊ Р·Р°РІРµСЂС€РµРЅРёСЏ С‚СЂР°РЅР·Р°РєС†РёРё 1, С‚Рє РёРЅР°С‡Рµ Р±СѓРґСѓС‚
+--РёР·РјРµРЅРµС‹ РґР°РЅРЅС‹Рµ РїРѕРІС‚РѕСЂРЅРѕ СЃС‡РёС‚С‹РІР°РµРјС‹Рµ РІ С‚СЂР°РЅР·Р°РєС†РёРё 1, С‚Рµ 
+--РґР°РЅРЅР°СЏ Р°РЅРѕРјР°Р»РёСЏ Р±Р»РѕРєРёСЂСѓРµС‚СЃСЏ РЅР° РґР°РЅРЅРѕРј СѓСЂРѕРІРЅРµ РёР·РѕР»СЏС†РёРё
 
 
---ФАНТОМ
+--Р¤РђРќРўРћРњ
 
 BEGIN TRANSACTION --2
 
 INSERT INTO PERSON VALUES --4
-('КадцынBY','ИльяY','ЕфYремович',2,
+('РљР°РґС†С‹РЅBY','РР»СЊСЏY','Р•С„YСЂРµРјРѕРІРёС‡',2,
 '04/10/1956', 'kad.gmail.com', 
 '71(2233)629-89-30', 6)
---успешно выполнится и добавит строки в таблицу 
---тк аномалия фантом разрешена на данном уровне изоляции
+--СѓСЃРїРµС€РЅРѕ РІС‹РїРѕР»РЅРёС‚СЃСЏ Рё РґРѕР±Р°РІРёС‚ СЃС‚СЂРѕРєРё РІ С‚Р°Р±Р»РёС†Сѓ 
+--С‚Рє Р°РЅРѕРјР°Р»РёСЏ С„Р°РЅС‚РѕРј СЂР°Р·СЂРµС€РµРЅР° РЅР° РґР°РЅРЅРѕРј СѓСЂРѕРІРЅРµ РёР·РѕР»СЏС†РёРё
 COMMIT
 
 
 
---ДЛЯ SERIALIZABLE
+--Р”Р›РЇ SERIALIZABLE
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
---ФАНТОМ
+--Р¤РђРќРўРћРњ
 
 BEGIN TRANSACTION --2
 
 INSERT INTO PERSON VALUES --4
-('КадцынBYI','ИльяY','ЕфYремович',2,
+('РљР°РґС†С‹РЅBYI','РР»СЊСЏY','Р•С„YСЂРµРјРѕРІРёС‡',2,
 '04/10/1956', 'kad.gmail.com', 
 '71(2233)629-89-30', 6)
---будет ждать окончания выполнения транзакции 1, тк фантом
---запрещён на данном уровне изоляции
+--Р±СѓРґРµС‚ Р¶РґР°С‚СЊ РѕРєРѕРЅС‡Р°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ С‚СЂР°РЅР·Р°РєС†РёРё 1, С‚Рє С„Р°РЅС‚РѕРј
+--Р·Р°РїСЂРµС‰С‘РЅ РЅР° РґР°РЅРЅРѕРј СѓСЂРѕРІРЅРµ РёР·РѕР»СЏС†РёРё
 COMMIT
---после завершения транзакции 1, эта транзакция успешно 
---выполнится и добавит значение в таблицу
+--РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРёСЏ С‚СЂР°РЅР·Р°РєС†РёРё 1, СЌС‚Р° С‚СЂР°РЅР·Р°РєС†РёСЏ СѓСЃРїРµС€РЅРѕ 
+--РІС‹РїРѕР»РЅРёС‚СЃСЏ Рё РґРѕР±Р°РІРёС‚ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ
 
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
