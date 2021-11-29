@@ -1,9 +1,9 @@
--- при занесении занятого шахматистом места ранг шахматиста, занявшего место не ниже 3-го
--- увеличивается на 1, если
--- (( 4 - место ) * (средний ранг на турнире)/ранг участника) >= 1
+-- РїСЂРё Р·Р°РЅРµСЃРµРЅРёРё Р·Р°РЅСЏС‚РѕРіРѕ С€Р°С…РјР°С‚РёСЃС‚РѕРј РјРµСЃС‚Р° СЂР°РЅРі С€Р°С…РјР°С‚РёСЃС‚Р°, Р·Р°РЅСЏРІС€РµРіРѕ РјРµСЃС‚Рѕ РЅРµ РЅРёР¶Рµ 3-РіРѕ
+-- СѓРІРµР»РёС‡РёРІР°РµС‚СЃСЏ РЅР° 1, РµСЃР»Рё
+-- (( 4 - РјРµСЃС‚Рѕ ) * (СЃСЂРµРґРЅРёР№ СЂР°РЅРі РЅР° С‚СѓСЂРЅРёСЂРµ)/СЂР°РЅРі СѓС‡Р°СЃС‚РЅРёРєР°) >= 1
 
--- а ранг шахматиста, занявшего место ниже 5-го уменьшается на 1, если
--- ((-1)*(5 - место) * (средний ранг на турнире)/ранг участника) >= 1
+-- Р° СЂР°РЅРі С€Р°С…РјР°С‚РёСЃС‚Р°, Р·Р°РЅСЏРІС€РµРіРѕ РјРµСЃС‚Рѕ РЅРёР¶Рµ 5-РіРѕ СѓРјРµРЅСЊС€Р°РµС‚СЃСЏ РЅР° 1, РµСЃР»Рё
+-- ((-1)*(5 - РјРµСЃС‚Рѕ) * (СЃСЂРµРґРЅРёР№ СЂР°РЅРі РЅР° С‚СѓСЂРЅРёСЂРµ)/СЂР°РЅРі СѓС‡Р°СЃС‚РЅРёРєР°) >= 1
 
 if (object_id ('Trig', 'TR') is not null)
 drop trigger Trig
@@ -18,7 +18,7 @@ DECLARE @k INT
 	SET @k = 1
 	DECLARE @size INT
 	SET @size = (SELECT COUNT(*) FROM inserted)
-	--создадим табличное выражение для записи строк, котрые изменялись
+	--СЃРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС‡РЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ РґР»СЏ Р·Р°РїРёСЃРё СЃС‚СЂРѕРє, РєРѕС‚СЂС‹Рµ РёР·РјРµРЅСЏР»РёСЃСЊ
 	
 	insert into @t1(num, person_id, tourney_id, place, rang_id)  SELECT ROW_NUMBER() OVER (ORDER BY deleted.player_id),
 		deleted.player_id, deleted.tourney_id, inserted.place, rang.rang_id FROM deleted join inserted 
@@ -58,7 +58,12 @@ declare @id_1 smallint
 set @id_1 = @person_id;
 
 declare @id_rang smallint
-
+/*
+set @id_rang = (select rang_name.rang_id from rang_name 
+join rang on rang_name.rang_id = rang.rang_id 
+join person on rang.person_id = person.person_id 
+where person.person_id = @id_1)   
+*/
 set @id_rang = (
 select rang.rang_id from rang join TOURNEY_PLAYER
 on rang.person_id=tourney_player.player_id
@@ -83,24 +88,14 @@ where rang.start_date_<= tourney.start_date_ and isnull(rang.end_date_, tourney.
 and tourney.tourney_id = (select tourney_id from @t1 where num = @k)
 and tourney_player.player_id = @id_1
 ) and rang.person_id = @id_1
-
+--(select rang_id from rang where person_id = @id_1)
+ 
  
 end
 
  if (@place > 5) and ((-1)*(5 - @place) * @avg_rang/@rang_id) >= 1
 
  begin
-set @id_1 = @person_id;
-
-set @id_rang = (
-select rang.rang_id from rang join TOURNEY_PLAYER
-on rang.person_id=tourney_player.player_id
-join tourney on tourney_player.tourney_id=tourney.tourney_id
-where rang.start_date_<= tourney.start_date_ and isnull(rang.end_date_, tourney.end_date_) >= tourney.end_date_
-and tourney.tourney_id = (select tourney_id from @t1 where num = @k)
-and tourney_player.player_id = @id_1
-)
-
 declare @id_rang3 smallint
 if (@id_rang = 1)
 set @id_rang3 = 1
@@ -117,39 +112,18 @@ and tourney.tourney_id = (select tourney_id from @t1 where num = @k)
 and tourney_player.player_id = @id_1
 ) and rang.person_id = @id_1
 
- 
- 
 end
  set @k = @k + 1
 
  end
 
 
- update tourney_player set tourney_player.place = 1 where tourney_id = 1
-
- update tourney_player set tourney_player.place = 8 where tourney_id = 1 and player_id = 14
+ update tourney_player set tourney_player.place = 1 where player_id = 1 and tourney_id = 2
 
  select * from tourney_player where player_id = 12 and tourney_id = 1
 
- select * from rang join tourney_player on rang.person_id = tourney_player.player_id where tourney_id = 1
-
- select * from rang where person_id = 14
+ select * from rang where person_id = 1
 
  select * from rang_name join rang on rang_name.rang_id = rang.rang_id where rang.person_id = 14
 
-
- drop table login_data
- CREATE TABLE LOGIN_DATA
-(
-"user_login" VARCHAR(40),
-"login_date" DATETIME
-);
-DROP TRIGGER IF EXISTS logon_event 
-ON ALL SERVER  
-go
-CREATE TRIGGER logon_event
-ON ALL SERVER
-AFTER LOGON
-AS
-INSERT INTO LOGIN_DATA VALUES(ORIGINAL_LOGIN(), GETDATE())
-select * from login_data
+ select * fr
